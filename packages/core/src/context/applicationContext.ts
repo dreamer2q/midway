@@ -1,7 +1,7 @@
 /**
  * 基础的ObjectFactory和ApplicationContext实现
  */
-import { ObjectIdentifier } from '@midwayjs/decorator';
+import { getProviderId, ObjectIdentifier } from '@midwayjs/decorator';
 import {
   IApplicationContext,
   IObjectDefinition,
@@ -166,8 +166,8 @@ export class BaseApplicationContext
     this.readied = false;
   }
 
-  async ready(): Promise<void> {
-    await this.loadDefinitions();
+  ready() {
+    this.loadDefinitions();
     this.readied = true;
   }
 
@@ -180,9 +180,15 @@ export class BaseApplicationContext
     return false;
   }
 
-  get<T>(identifier: { new (): T }, args?: any): T;
+  get<T>(identifier: { new (...args): T }, args?: any): T;
   get<T>(identifier: ObjectIdentifier, args?: any): T;
   get(identifier: any, args?: any): any {
+    if (!this.readied) {
+      this.ready();
+    }
+    if (typeof identifier !== 'string') {
+      identifier = getProviderId(identifier);
+    }
     // 因为在这里拿不到类名, NotFoundError 类的错误信息在 ManagedResolverFactory.ts createAsync 方法中增加错误类名
     identifier = parsePrefix(identifier);
 
@@ -208,9 +214,15 @@ export class BaseApplicationContext
     return this.getManagedResolverFactory().create({ definition, args });
   }
 
-  async getAsync<T>(identifier: { new (): T }, args?: any): Promise<T>;
+  async getAsync<T>(identifier: { new (...args): T }, args?: any): Promise<T>;
   async getAsync<T>(identifier: ObjectIdentifier, args?: any): Promise<T>;
   async getAsync(identifier: any, args?: any): Promise<any> {
+    if (!this.readied) {
+      this.ready();
+    }
+    if (typeof identifier !== 'string') {
+      identifier = getProviderId(identifier);
+    }
     // 因为在这里拿不到类名, NotFoundError 类的错误信息在 ManagedResolverFactory.ts createAsync 方法中增加错误类名
     identifier = parsePrefix(identifier);
 

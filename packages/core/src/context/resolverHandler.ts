@@ -95,6 +95,10 @@ export class ResolverHandler implements IResolverHandler {
     this.handlerMap.set(key, fn);
   }
 
+  hasHandler(key: string) {
+    return this.handlerMap.has(key);
+  }
+
   getHandler(key: string) {
     if (this.handlerMap.has(key)) {
       return this.handlerMap.get(key);

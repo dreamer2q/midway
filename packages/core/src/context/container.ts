@@ -7,6 +7,7 @@ import {
   generateProvideId,
   getClassMetadata,
   getConstructorInject,
+  getObjectDefProps,
   getProviderId,
   IComponentInfo,
   INJECT_CLASS_KEY_PREFIX,
@@ -230,17 +231,24 @@ export class MidwayContainer
       configuration.load(module);
     }
 
+    // register base config hook
+    if (!this.resolverHandler.hasHandler(CONFIG_KEY)) {
+      this.registerDataHandler(CONFIG_KEY, (key: string) => {
+        if (key === ALL) {
+          return this.getConfigService().getConfiguration();
+        } else {
+          return this.getConfigService().getConfiguration(key);
+        }
+      });
+    }
+  }
+
+  loadDefinitions() {
+    if (!this.isLoad) {
+      this.load();
+    }
     // load project file
     this.fileDetector?.run(this);
-
-    // register base config hook
-    this.registerDataHandler(CONFIG_KEY, (key: string) => {
-      if (key === ALL) {
-        return this.getConfigService().getConfiguration();
-      } else {
-        return this.getConfigService().getConfiguration(key);
-      }
-    });
   }
 
   createConfiguration() {
@@ -249,13 +257,6 @@ export class MidwayContainer
 
   protected getIdentifier(target: any) {
     return getProviderId(target);
-  }
-
-  async ready() {
-    if (!this.isLoad) {
-      this.load();
-    }
-    return super.ready();
   }
 
   bindClass(exports, namespace = '', filePath?: string) {
@@ -372,9 +373,25 @@ export class MidwayContainer
       }
     }
 
-    // this.convertOptionsToDefinition(options, definitionMeta);
-    // 对象自定义的annotations可以覆盖默认的属性
-    // this.registerCustomBinding(definitionMeta, target);
+    // @async, @init, @destroy @scope
+    const objDefOptions: ObjectDefinitionOptions =
+      getObjectDefProps(target) ?? {};
+    if (objDefOptions.initMethod) {
+      this.debugLogger(`  register initMethod = ${objDefOptions.initMethod}`);
+      definitionMeta.initMethod = objDefOptions.initMethod;
+    }
+
+    if (objDefOptions.destroyMethod) {
+      this.debugLogger(
+        `  register destroyMethod = ${objDefOptions.destroyMethod}`
+      );
+      definitionMeta.destroyMethod = objDefOptions.destroyMethod;
+    }
+
+    if (objDefOptions.scope) {
+      this.debugLogger(`  register scope = ${objDefOptions.scope}`);
+      definitionMeta.scope = objDefOptions.scope;
+    }
 
     // 把源信息变成真正的对象定义
     this.restoreDefinition(definitionMeta);
@@ -506,6 +523,10 @@ export class MidwayContainer
 
   setFileDetector(fileDetector: IFileDetector) {
     this.fileDetector = fileDetector;
+  }
+
+  createChild(): IMidwayContainer {
+    return new MidwayContainer('', this);
   }
 
   registerDataHandler(handlerType: string, handler: (...args) => any) {

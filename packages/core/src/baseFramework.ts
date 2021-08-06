@@ -31,13 +31,6 @@ import { MidwayRequestContainer } from './context/requestContainer';
 import { FunctionalConfiguration } from './functional/configuration';
 import { MidwayInformationService } from './service/informationService';
 
-// function buildLoadDir(baseDir, dir) {
-//   if (!isAbsolute(dir)) {
-//     return join(baseDir, dir);
-//   }
-//   return dir;
-// }
-
 function setupAppDir(baseDir: string) {
   return dirname(baseDir);
 }
@@ -48,7 +41,6 @@ export abstract class BaseFramework<
   OPT extends IConfigurationOptions
 > implements IMidwayFramework<APP, OPT>
 {
-  protected isTsMode = true;
   protected applicationContext: IMidwayContainer;
   protected logger: ILogger;
   protected appLogger: ILogger;
@@ -156,7 +148,6 @@ export abstract class BaseFramework<
       this.applicationContext = new MidwayContainer(options.baseDir, undefined);
       this.applicationContext.registerObject('baseDir', options.baseDir);
       this.applicationContext.registerObject('appDir', options.appDir);
-      this.applicationContext.registerObject('isTsMode', this.isTsMode);
     }
 
     /**
@@ -175,26 +166,8 @@ export abstract class BaseFramework<
       // 如果有传入全局容器，就不需要再次扫描了
       return;
     }
-    /**
-     * load directory and bind files to ioc container
-     */
-    if (!this.isTsMode && options.disableAutoLoad === undefined) {
-      // disable auto load in js mode by default
-      options.disableAutoLoad = true;
-    }
 
-    if (options.disableAutoLoad) return;
-
-    // use baseDir in parameter first
-    // const defaultLoadDir = this.isTsMode ? [options.baseDir] : [];
-    // this.applicationContext.load({
-    //   loadDir: (options.loadDir || defaultLoadDir).map(dir => {
-    //     return buildLoadDir(options.baseDir, dir);
-    //   }),
-    //   pattern: options.pattern,
-    //   ignore: options.ignore,
-    // });
-
+    // 废弃 deprecated
     if (options.preloadModules && options.preloadModules.length) {
       for (const preloadModule of options.preloadModules) {
         this.applicationContext.bindClass(preloadModule);

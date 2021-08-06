@@ -188,7 +188,7 @@ export interface IApplicationContext extends IObjectFactory {
   parent: IApplicationContext;
   props: IProperties;
   dependencyMap: Map<string, ObjectDependencyTree>;
-  ready(): Promise<void>;
+  ready();
   stop(): Promise<void>;
   registerObject(identifier: ObjectIdentifier, target: any);
 }
@@ -244,6 +244,7 @@ export interface IResolverHandler {
   beforeEachCreated(target, constructorArgs: any[], context);
   afterEachCreated(instance, context, definition);
   registerHandler(key: string, fn: HandlerFunction);
+  hasHandler(key: string): boolean;
   getHandler(key: string);
 }
 
@@ -259,7 +260,7 @@ export interface IMidwayContainer extends IApplicationContext {
   getDebugLogger();
   setFileDetector(fileDetector: IFileDetector);
   registerDataHandler(handlerType: string, handler: (...args) => any);
-  // createChild(): IMidwayContainer;
+  createChild(): IMidwayContainer;
   // resolve<T>(target: T): T;
   /**
    * 默认不添加创建的 configuration 到 configurations 数组中
