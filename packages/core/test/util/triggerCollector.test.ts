@@ -1,14 +1,12 @@
 import { ServerlessTriggerCollector } from '../../src';
 import { join } from 'path';
 import { clearAllModule } from '@midwayjs/decorator';
-import { clearContainerCache } from '../../src';
 import { matchObjectPropertyInArray } from '../util';
 
 describe('/test/util/triggerCollector.test.ts', function () {
 
   it('should test with function router', async () => {
     clearAllModule();
-    clearContainerCache();
     const collector = new ServerlessTriggerCollector(join(__dirname, '../fixtures/base-app-func-router/src'));
     const result = await collector.getFunctionList();
     expect(collector.getApplicationContext()).not.toBeNull();
@@ -189,7 +187,6 @@ describe('/test/util/triggerCollector.test.ts', function () {
 
   it('should test with serverless trigger', async () => {
     clearAllModule();
-    clearContainerCache();
     const collector = new ServerlessTriggerCollector(join(__dirname, '../fixtures/app-with-serverless-trigger/src'));
     const result = await collector.getFunctionList();
     expect(matchObjectPropertyInArray(result, {
@@ -213,7 +210,6 @@ describe('/test/util/triggerCollector.test.ts', function () {
 
   it('should test duplicate router', async () => {
     clearAllModule();
-    clearContainerCache();
     const collector = new ServerlessTriggerCollector(join(__dirname, '../fixtures/app-with-duplicate-router/src'));
     await expect(collector.getFunctionList()).rejects.toThrow('Duplicate router')
   });

@@ -249,14 +249,12 @@ export class MidwayContainer
     }
     // load project file
     this.fileDetector?.run(this);
+    // init config service
+    this.configService.load();
   }
 
   createConfiguration() {
     return new ContainerConfiguration(this);
-  }
-
-  protected getIdentifier(target: any) {
-    return getProviderId(target);
   }
 
   bindClass(exports, namespace = '', filePath?: string) {
@@ -285,7 +283,7 @@ export class MidwayContainer
     if (isClass(identifier) || isFunction(identifier)) {
       options = target;
       target = identifier as any;
-      identifier = this.getIdentifier(target);
+      identifier = getProviderId(target);
     }
 
     if (isClass(target)) {

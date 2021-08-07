@@ -75,7 +75,7 @@ export class MidwayConfigService implements IConfigService {
     return splits.pop();
   }
 
-  async load() {
+  load() {
     if (this.isReady) return;
     // get default
     const defaultSet = this.getEnvSet('default');
@@ -84,7 +84,7 @@ export class MidwayConfigService implements IConfigService {
     // merge set
     const target = {};
     for (const filename of [...defaultSet, ...currentEnvSet]) {
-      const config = await this.loadConfig(filename, target);
+      const config = this.loadConfig(filename, target);
 
       if (!config) {
         continue;
@@ -113,7 +113,7 @@ export class MidwayConfigService implements IConfigService {
     return this.configuration;
   }
 
-  async loadConfig(configFilename, target?): Promise<Record<string, unknown>> {
+  loadConfig(configFilename, target?): Record<string, unknown> {
     debug('load config %s.', configFilename);
     let exports = require(configFilename);
     if (exports && exports['default'] && Object.keys(exports).length === 1) {
