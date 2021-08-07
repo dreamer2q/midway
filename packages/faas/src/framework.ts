@@ -31,8 +31,6 @@ import { createConsoleLogger, LoggerOptions, loggers } from '@midwayjs/logger';
 
 const LOCK_KEY = '_faas_starter_start_key';
 
-// const MIDWAY_FAAS_KEY = '__midway_faas__';
-
 export class MidwayFaaSFramework extends BaseFramework<
   IMidwayFaaSApplication,
   FaaSContext,
