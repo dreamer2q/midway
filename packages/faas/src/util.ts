@@ -1,17 +1,11 @@
-import { CustomModuleDetector, MidwayContainer } from '@midwayjs/core';
+import { createModuleContainer } from '@midwayjs/core';
 import { Framework } from './index';
 
 export const createModuleServerlessFramework = async (options: {
   modules: any[];
   entry: { Configuration: any };
 }) => {
-  const container = new MidwayContainer();
-  container.setFileDetector(
-    new CustomModuleDetector({
-      modules: options.modules,
-    })
-  );
-  container.load(options.entry);
+  const container = createModuleContainer(options);
   const framework = new Framework();
   framework.configure({});
   await framework.initialize({ applicationContext: container });

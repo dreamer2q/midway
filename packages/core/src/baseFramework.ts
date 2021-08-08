@@ -8,7 +8,6 @@ import {
   IMidwayFramework,
   MidwayProcessTypeEnum,
 } from './interface';
-import { MidwayContainer } from './context/container';
 import {
   APPLICATION_KEY,
   CONFIGURATION_KEY,
@@ -30,6 +29,7 @@ import { createMidwayLogger } from './logger';
 import { MidwayRequestContainer } from './context/requestContainer';
 import { FunctionalConfiguration } from './functional/configuration';
 import { MidwayInformationService } from './service/informationService';
+import { createDirectoryGlobContainer } from './util/containerUtil';
 
 function setupAppDir(baseDir: string) {
   return dirname(baseDir);
@@ -95,7 +95,7 @@ export abstract class BaseFramework<
     await this.applicationInitialize(options);
 
     /**
-     * start to load configuration and lifeCycle
+     * start container ready
      */
     await this.containerReady(options);
 
@@ -145,10 +145,13 @@ export abstract class BaseFramework<
     if (options.applicationContext) {
       this.applicationContext = options.applicationContext;
     } else {
-      this.applicationContext = new MidwayContainer(options.baseDir, undefined);
-      this.applicationContext.registerObject('baseDir', options.baseDir);
-      this.applicationContext.registerObject('appDir', options.appDir);
+      this.applicationContext = createDirectoryGlobContainer({
+        baseDir: options.baseDir,
+      });
     }
+
+    this.applicationContext.registerObject('baseDir', options.baseDir);
+    this.applicationContext.registerObject('appDir', options.appDir);
 
     /**
      * initialize base information

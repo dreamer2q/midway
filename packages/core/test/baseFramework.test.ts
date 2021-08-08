@@ -20,7 +20,7 @@ import {
 import * as mm from 'mm';
 // import { LifeCycleTest, LifeCycleTest1, TestBinding } from './fixtures/lifecycle';
 import sinon = require('sinon');
-import { getCurrentApplicationContext, getCurrentMainApp, getCurrentMainFramework } from '../src/util/contextUtil';
+import { getCurrentApplicationContext, getCurrentMainApp, getCurrentMainFramework } from '../src';
 
 @Provide()
 class TestModule {
@@ -32,7 +32,7 @@ class TestModule {
 describe('/test/baseFramework.test.ts', () => {
   beforeEach(() => {
     clearAllModule();
-    clearContainerCache();
+    // clearContainerCache();
   });
 
   it.skip('should load js directory and auto disable', async () => {

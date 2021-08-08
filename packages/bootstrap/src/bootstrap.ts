@@ -2,7 +2,6 @@ import {
   IMidwayFramework,
   IMidwayBootstrapOptions,
   MidwayFrameworkType,
-  ConfigFramework,
   IMidwayApplication,
   IMidwayContainer,
   MidwayContainer,
@@ -61,23 +60,8 @@ export class BootstrapStarter {
       this.applicationContext.load(
         require(join(this.baseDir, 'configuration'))
       );
+      await this.applicationContext.ready();
     }
-
-    // 初始化一个只读配置的空框架，并且初始化容器和扫描
-    const framework = new ConfigFramework();
-    await framework.initialize({
-      ...this.globalOptions,
-      baseDir: this.baseDir,
-      appDir: this.appDir,
-      applicationContext: this.applicationContext,
-      globalApplicationHandler: (type: MidwayFrameworkType) => {
-        if (type) {
-          return this.globalAppMap.get(type);
-        } else {
-          return mainApp;
-        }
-      },
-    });
 
     // 调用 bootstrap 的 before 逻辑
     if (this.globalOptions['beforeHandler']) {
@@ -96,6 +80,13 @@ export class BootstrapStarter {
       appDir: this.appDir,
       isMainFramework: true,
       applicationContext: this.applicationContext,
+      globalApplicationHandler: (type: MidwayFrameworkType) => {
+        if (type) {
+          return this.globalAppMap.get(type);
+        } else {
+          return mainApp;
+        }
+      },
     });
 
     global['MIDWAY_MAIN_FRAMEWORK'] = this.getMainFramework();

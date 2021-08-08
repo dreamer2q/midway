@@ -97,15 +97,26 @@ class ContainerConfiguration {
         // }
 
         this.addImports(configurationOptions.imports);
+        this.addImportConfigs(configurationOptions.importConfigs);
         this.bindConfigurationClass(configurationExport);
       }
     }
   }
 
+  addImportConfigs(importConfigs: string[]) {
+    if (importConfigs && importConfigs.length) {
+      debug('   import configs %j".', importConfigs);
+      this.container.getConfigService().add(importConfigs);
+    }
+  }
+
   addImports(imports: any[] = []) {
     // 处理 imports
-    for (const importPackage of imports) {
+    for (let importPackage of imports) {
       if (!importPackage) continue;
+      if (typeof importPackage === 'string') {
+        importPackage = require(importPackage);
+      }
       // for package
       const subContainerConfiguration = this.container.createConfiguration();
       if ('Configuration' in importPackage) {
@@ -128,10 +139,7 @@ class ContainerConfiguration {
           );
         }
       } else {
-        throw new Error(
-          'import module not a midway component, module =' +
-            util.inspect(importPackage)
-        );
+        subContainerConfiguration.load(importPackage);
       }
     }
   }
