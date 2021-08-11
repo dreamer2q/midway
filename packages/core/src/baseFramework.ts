@@ -24,16 +24,11 @@ import {
   loggers,
   MidwayContextLogger,
 } from '@midwayjs/logger';
-import { dirname } from 'path';
 import { createMidwayLogger } from './logger';
 import { MidwayRequestContainer } from './context/requestContainer';
 import { FunctionalConfiguration } from './functional/configuration';
 import { MidwayInformationService } from './service/informationService';
 import { createDirectoryGlobContainer } from './util/containerUtil';
-
-function setupAppDir(baseDir: string) {
-  return dirname(baseDir);
-}
 
 export abstract class BaseFramework<
   APP extends IMidwayApplication<CTX>,
@@ -136,9 +131,6 @@ export abstract class BaseFramework<
   }
 
   protected async containerInitialize(options: IMidwayBootstrapOptions) {
-    if (!options.appDir) {
-      options.appDir = setupAppDir(options.baseDir);
-    }
     /**
      * initialize container
      */
