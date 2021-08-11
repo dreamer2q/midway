@@ -8,7 +8,11 @@ export const createModuleServerlessFramework = async (options: {
   const container = createModuleContainer(options);
   const framework = new Framework();
   framework.configure({});
-  await framework.initialize({ applicationContext: container });
+  await framework.initialize({
+    applicationContext: container,
+    baseDir: '',
+    appDir: '',
+  });
   await framework.run();
   return framework;
 };
